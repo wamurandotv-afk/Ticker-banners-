@@ -221,6 +221,63 @@
             object-fit: cover;
         }
 
+        /* Logo - Top Right with Blinking Colors */
+        .logo-text {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            z-index: 10000;
+            padding: 12px 16px;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid transparent;
+            animation: colorBlink 2s ease-in-out infinite;
+        }
+
+        @keyframes colorBlink {
+            0% {
+                color: #e53935;
+                border-color: #e53935;
+                text-shadow: 0 0 12px rgba(229, 57, 53, 0.8);
+                box-shadow: 0 0 20px rgba(229, 57, 53, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+            }
+            20% {
+                color: #00bcd4;
+                border-color: #00bcd4;
+                text-shadow: 0 0 12px rgba(0, 188, 212, 0.8);
+                box-shadow: 0 0 20px rgba(0, 188, 212, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+            }
+            40% {
+                color: #ffc107;
+                border-color: #ffc107;
+                text-shadow: 0 0 12px rgba(255, 193, 7, 0.8);
+                box-shadow: 0 0 20px rgba(255, 193, 7, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+            }
+            60% {
+                color: #4caf50;
+                border-color: #4caf50;
+                text-shadow: 0 0 12px rgba(76, 175, 80, 0.8);
+                box-shadow: 0 0 20px rgba(76, 175, 80, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+            }
+            80% {
+                color: #e91e63;
+                border-color: #e91e63;
+                text-shadow: 0 0 12px rgba(233, 30, 99, 0.8);
+                box-shadow: 0 0 20px rgba(233, 30, 99, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+            }
+            100% {
+                color: #e53935;
+                border-color: #e53935;
+                text-shadow: 0 0 12px rgba(229, 57, 53, 0.8);
+                box-shadow: 0 0 20px rgba(229, 57, 53, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+            }
+        }
+
         /* Accessibility */
         @media (prefers-reduced-motion: reduce) {
             .scroll-text {
@@ -230,6 +287,12 @@
             .breaking-pulse {
                 animation: none;
                 opacity: 1;
+            }
+            .logo-text {
+                animation: none;
+                color: #e53935;
+                border-color: #e53935;
+                text-shadow: none;
             }
         }
 
@@ -280,6 +343,13 @@
                 left: 8px;
                 border-width: 2px;
             }
+
+            .logo-text {
+                font-size: 13px;
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+            }
         }
     </style>
 </head>
@@ -288,6 +358,9 @@
     <div class="profile-photo">
         <img src="profile.jpg" alt="Profile Photo">
     </div>
+
+    <!-- Logo Text - Top Right with Blinking Colors -->
+    <div class="logo-text">Denis Siara Official</div>
 
     <!-- Breaking News Alert Bar -->
     <div class="ticker-wrapper">
