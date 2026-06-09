@@ -161,7 +161,7 @@
             font-size: 18px;
             font-weight: 500;
             letter-spacing: 0.3px;
-            animation: scroll 25s linear infinite;
+            animation: scroll 45s linear infinite;
             line-height: 1.4;
         }
 
@@ -188,16 +188,20 @@
         /* Time/Date Display */
         .ticker-time {
             display: flex;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100%;
-            padding: 0 20px;
+            padding: 0 15px;
             color: #e53935;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             flex-shrink: 0;
             border-left: 1px solid rgba(229, 57, 53, 0.3);
             position: relative;
             z-index: 5;
+            gap: 2px;
+            line-height: 1.2;
         }
 
         /* Profile Photo - Bottom Left */
@@ -332,8 +336,8 @@
             }
 
             .ticker-time {
-                font-size: 12px;
-                padding: 0 15px;
+                font-size: 10px;
+                padding: 0 12px;
             }
 
             .profile-photo {
@@ -377,6 +381,12 @@
             <div class="ticker-label">NEWS</div>
             <div class="scroll-container">
                 <div class="scroll-text">
+                    FOLLOW DENIS SIARA OFFICIAL ON ALL SOCIAL MEDIA PLATFORMS 
+                    <span class="separator">•</span>
+                    📞 CONTACT: 0119823761 or 0100622163 
+                    <span class="separator">•</span>
+                    THANKS FOR YOUR SUPPORT - KEEP IT UP SUPPORTING ME! 
+                    <span class="separator">•</span>
                     KENYA NEWS UPDATE: Latest developments in the country 
                     <span class="separator">•</span>
                     Economy shows signs of recovery with improved consumer spending 
@@ -392,21 +402,39 @@
                     Citizen News - Your Trusted Source
                 </div>
             </div>
-            <div class="ticker-time" id="ticker-time">00:00</div>
+            <div class="ticker-time" id="ticker-time">
+                <div id="date-display">Mon 09 Jun</div>
+                <div id="time-display">00:00</div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Update time display
-        function updateTime() {
+        // Update time and date display
+        function updateTimeAndDate() {
             const now = new Date();
+            
+            // Time format HH:MM
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('ticker-time').textContent = `${hours}:${minutes}`;
+            const timeString = `${hours}:${minutes}`;
+            
+            // Date format: Day DD Mon
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const dayName = days[now.getDay()];
+            const date = String(now.getDate()).padStart(2, '0');
+            const monthName = months[now.getMonth()];
+            const dateString = `${dayName} ${date} ${monthName}`;
+            
+            document.getElementById('time-display').textContent = timeString;
+            document.getElementById('date-display').textContent = dateString;
         }
 
-        updateTime();
-        setInterval(updateTime, 60000);
+        // Initial update
+        updateTimeAndDate();
+        // Update every minute
+        setInterval(updateTimeAndDate, 60000);
 
         // Optional: Pause animation on hover for better UX
         const scrollText = document.querySelector('.scroll-text');
