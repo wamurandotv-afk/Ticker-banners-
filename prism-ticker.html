@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prism Live Studio Ticker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Main Ticker Wrapper - OPTIMIZED FOR STREAMING */
+        .ticker-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Top Breaking News Bar */
+        .breaking-bar {
+            display: flex;
+            align-items: center;
+            height: 32px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            padding: 0 15px;
+            gap: 10px;
+        }
+
+        .breaking-label {
+            background: #b71c1c;
+            color: white;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            height: 22px;
+            flex-shrink: 0;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .breaking-pulse {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .breaking-text {
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            flex-grow: 1;
+        }
+
+        /* Main Ticker Container */
+        .ticker-container {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            background: linear-gradient(180deg, rgba(20, 20, 30, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+            border-top: 2px solid #e53935;
+            border-bottom: 1px solid rgba(229, 57, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticker-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: linear-gradient(90deg, rgba(10, 10, 15, 0.98) 0%, transparent 100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .ticker-container::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: linear-gradient(270deg, rgba(10, 10, 15, 0.98) 0%, transparent 100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Label Section */
+        .ticker-label {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            background: linear-gradient(90deg, #e53935 0%, #d32f2f 100%);
+            padding: 0 20px;
+            flex-shrink: 0;
+            font-weight: 900;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: white;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 5;
+        }
+
+        .ticker-label::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid #d32f2f;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        /* Scrolling Text */
+        .scroll-container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            flex: 1;
+            position: relative;
+            z-index: 3;
+            overflow: hidden;
+            padding: 0 20px 0 30px;
+        }
+
+        .scroll-text {
+            white-space: nowrap;
+            color: #f0f0f0;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            animation: scroll 25s linear infinite;
+            line-height: 1.4;
+            will-change: transform;
+        }
+
+        .scroll-text span.separator {
+            color: #e53935;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(100vw);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Hover Effect */
+        .ticker-container:hover .scroll-text {
+            animation-play-state: paused;
+        }
+
+        /* Time/Date Display */
+        .ticker-time {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 0 15px;
+            color: #e53935;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            border-left: 1px solid rgba(229, 57, 53, 0.3);
+            position: relative;
+            z-index: 5;
+            gap: 2px;
+            line-height: 1.2;
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-text {
+                animation: none;
+                transform: translateX(0);
+            }
+            .breaking-pulse {
+                animation: none;
+                opacity: 1;
+            }
+        }
+
+        /* Optimize for Streaming Resolution */
+        @media (max-height: 120px) {
+            .breaking-bar {
+                height: 25px;
+                padding: 0 10px;
+                gap: 8px;
+            }
+
+            .breaking-label {
+                font-size: 9px;
+                padding: 2px 6px;
+                height: 18px;
+            }
+
+            .breaking-text {
+                font-size: 10px;
+            }
+
+            .ticker-container {
+                height: 45px;
+            }
+
+            .ticker-label {
+                font-size: 13px;
+                padding: 0 15px;
+            }
+
+            .scroll-text {
+                font-size: 16px;
+            }
+
+            .ticker-time {
+                font-size: 11px;
+                padding: 0 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Breaking News Alert Bar -->
+    <div class="ticker-wrapper">
+        <div class="breaking-bar">
+            <div class="breaking-label">
+                <span class="breaking-pulse"></span>
+                BREAKING
+            </div>
+            <div class="breaking-text">Live Updates</div>
+        </div>
+
+        <!-- Main Ticker -->
+        <div class="ticker-container" role="status" aria-live="polite" aria-label="News ticker">
+            <div class="ticker-label">LIVE</div>
+            <div class="scroll-container">
+                <div class="scroll-text">
+                    🎬 WAMURANDOTV-AFK LIVE STREAM IN PROGRESS 
+                    <span class="separator">•</span>
+                    📱 FOLLOW ON ALL SOCIAL MEDIA PLATFORMS 
+                    <span class="separator">•</span>
+                    💬 ENGAGE WITH THE STREAM - COMMENT & SHARE 
+                    <span class="separator">•</span>
+                    🔔 TURN ON NOTIFICATIONS FOR LIVE UPDATES 
+                    <span class="separator">•</span>
+                    ⭐ SUBSCRIBE TO SUPPORT THE CHANNEL 
+                    <span class="separator">•</span>
+                    🎁 EXCLUSIVE CONTENT AVAILABLE FOR MEMBERS 
+                    <span class="separator">•</span>
+                    💰 DONATE TO HELP US CREATE BETTER CONTENT 
+                    <span class="separator">•</span>
+                    📢 SHARE THIS STREAM WITH YOUR FRIENDS 
+                    <span class="separator">•</span>
+                    Thanks for watching - Your support means everything!
+                </div>
+            </div>
+            <div class="ticker-time" id="ticker-time">
+                <div id="date-display">Mon 09 Jun</div>
+                <div id="time-display">00:00</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update time and date display
+        function updateTimeAndDate() {
+            const now = new Date();
+            
+            // Time format HH:MM
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+            
+            // Date format: Day DD Mon
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const dayName = days[now.getDay()];
+            const date = String(now.getDate()).padStart(2, '0');
+            const monthName = months[now.getMonth()];
+            const dateString = `${dayName} ${date} ${monthName}`;
+            
+            document.getElementById('time-display').textContent = timeString;
+            document.getElementById('date-display').textContent = dateString;
+        }
+
+        // Initial update
+        updateTimeAndDate();
+        // Update every minute
+        setInterval(updateTimeAndDate, 60000);
+
+        // Optional: Pause animation on hover for better UX
+        const scrollText = document.querySelector('.scroll-text');
+        const scrollContainer = document.querySelector('.scroll-container');
+
+        scrollContainer.addEventListener('mouseenter', () => {
+            scrollText.style.animationPlayState = 'paused';
+        });
+
+        scrollContainer.addEventListener('mouseleave', () => {
+            scrollText.style.animationPlayState = 'running';
+        });
+    </script>
+</body>
+</html>
