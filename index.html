@@ -1,51 +1,317 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen TV News Ticker</title>
     <style>
-        body { margin: 0; padding: 0; background-color: transparent; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        
-        .ticker-container {
-            display: flex;
-            width: 100vw;
-            height: 50px;
-            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
-            align-items: center;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .label {
-            background-color: #d32f2f; /* Citizen Red */
-            color: white;
-            padding: 0 20px;
-            height: 100%;
+        body {
+            background: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Main Ticker Container */
+        .ticker-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Top Breaking News Bar */
+        .breaking-bar {
             display: flex;
             align-items: center;
-            font-weight: bold;
-            font-size: 18px;
+            height: 32px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            padding: 0 15px;
+            gap: 10px;
+        }
+
+        .breaking-label {
+            background: #b71c1c;
+            color: white;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            border-radius: 2px;
             text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            height: 22px;
+            flex-shrink: 0;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .breaking-pulse {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .breaking-text {
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            flex-grow: 1;
+        }
+
+        /* Main Ticker Container */
+        .ticker-container {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            background: linear-gradient(180deg, rgba(20, 20, 30, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+            border-top: 2px solid #e53935;
+            border-bottom: 1px solid rgba(229, 57, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticker-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: linear-gradient(90deg, rgba(10, 10, 15, 0.98) 0%, transparent 100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .ticker-container::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: linear-gradient(270deg, rgba(10, 10, 15, 0.98) 0%, transparent 100%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Label Section */
+        .ticker-label {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            background: linear-gradient(90deg, #e53935 0%, #d32f2f 100%);
+            padding: 0 20px;
+            flex-shrink: 0;
+            font-weight: 900;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: white;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 5;
+        }
+
+        .ticker-label::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid #d32f2f;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        /* Scrolling Text */
+        .scroll-container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            flex: 1;
+            position: relative;
+            z-index: 3;
+            overflow: hidden;
+            padding: 0 20px 0 30px;
         }
 
         .scroll-text {
             white-space: nowrap;
-            color: white;
-            font-size: 20px;
-            padding-left: 20px;
-            /* The Animation */
-            animation: scroll 20s linear infinite;
+            color: #f0f0f0;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            animation: scroll 25s linear infinite;
+            line-height: 1.4;
+        }
+
+        .scroll-text span.separator {
+            color: #e53935;
+            margin: 0 15px;
+            font-weight: bold;
         }
 
         @keyframes scroll {
-            from { transform: translateX(100vw); }
-            to { transform: translateX(-100%); }
+            0% {
+                transform: translateX(100vw);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Hover Effect */
+        .ticker-container:hover .scroll-text {
+            animation-play-state: paused;
+        }
+
+        /* Time/Date Display */
+        .ticker-time {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 20px;
+            color: #e53935;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+            border-left: 1px solid rgba(229, 57, 53, 0.3);
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-text {
+                animation: none;
+                transform: translateX(0);
+            }
+            .breaking-pulse {
+                animation: none;
+                opacity: 1;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .breaking-bar {
+                height: 28px;
+                padding: 0 10px;
+                gap: 8px;
+            }
+
+            .breaking-label {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+
+            .breaking-text {
+                font-size: 11px;
+            }
+
+            .ticker-container {
+                height: 45px;
+            }
+
+            .ticker-label {
+                font-size: 14px;
+                padding: 0 15px;
+                letter-spacing: 1px;
+            }
+
+            .scroll-text {
+                font-size: 16px;
+            }
+
+            .scroll-container {
+                padding: 0 15px 0 20px;
+            }
+
+            .ticker-time {
+                font-size: 12px;
+                padding: 0 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="ticker-container">
-        <div class="label">BREAKING NEWS</div>
-        <div class="scroll-text">
-            KENYA NEWS UPDATE: Latest developments in the country • Economy shows signs of recovery • Stay tuned for more updates • Citizen style ticker active!
+    <!-- Breaking News Alert Bar -->
+    <div class="ticker-wrapper">
+        <div class="breaking-bar">
+            <div class="breaking-label">
+                <span class="breaking-pulse"></span>
+                BREAKING
+            </div>
+            <div class="breaking-text">Live Updates</div>
+        </div>
+
+        <!-- Main Ticker -->
+        <div class="ticker-container" role="status" aria-live="polite" aria-label="News ticker">
+            <div class="ticker-label">NEWS</div>
+            <div class="scroll-container">
+                <div class="scroll-text">
+                    KENYA NEWS UPDATE: Latest developments in the country 
+                    <span class="separator">•</span>
+                    Economy shows signs of recovery with improved consumer spending 
+                    <span class="separator">•</span>
+                    Presidential address scheduled for tomorrow at noon 
+                    <span class="separator">•</span>
+                    Weather forecast: Partly cloudy with afternoon showers expected 
+                    <span class="separator">•</span>
+                    Tech sector growth accelerates with new startups launching 
+                    <span class="separator">•</span>
+                    Stay tuned for more updates 
+                    <span class="separator">•</span>
+                    Citizen News - Your Trusted Source
+                </div>
+            </div>
+            <div class="ticker-time" id="ticker-time">00:00</div>
         </div>
     </div>
+
+    <script>
+        // Update time display
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('ticker-time').textContent = `${hours}:${minutes}`;
+        }
+
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Optional: Pause animation on hover for better UX
+        const scrollText = document.querySelector('.scroll-text');
+        const scrollContainer = document.querySelector('.scroll-container');
+
+        scrollContainer.addEventListener('mouseenter', () => {
+            scrollText.style.animationPlayState = 'paused';
+        });
+
+        scrollContainer.addEventListener('mouseleave', () => {
+            scrollText.style.animationPlayState = 'running';
+        });
+    </script>
 </body>
-  </html>
-  
+</html>
